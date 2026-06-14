@@ -282,6 +282,51 @@
   .pick-row{display:flex; align-items:center; gap:11px; padding:8px 4px; border-bottom:1px solid var(--line); cursor:pointer}
   .pick-row .pth{flex:0 0 42px; height:42px; border-radius:9px; background-size:cover; background-position:center; display:grid; place-items:center; font-size:18px}
   .pick-row .nm{flex:1; font-weight:600; font-size:14px}
+
+  /* pro / paywall */
+  .pro-badge{display:inline-block; font-size:10px; font-weight:800; letter-spacing:.5px; background:#fde68a; color:#92400e; padding:2px 7px; border-radius:6px; vertical-align:middle; margin-left:6px}
+  .locked{text-align:center; padding:30px 22px; background:var(--card); border:1.5px solid var(--line); border-radius:18px}
+  .locked .big{font-size:42px; display:block; margin-bottom:10px}
+  .locked h3{margin:0 0 8px; font-size:18px}
+  .locked ul{list-style:none; padding:0; margin:14px 0; text-align:left; display:inline-block}
+  .locked li{font-size:14px; padding:5px 0; color:var(--ink)} .locked li::before{content:"✓ "; color:var(--green); font-weight:800}
+  .pro-box{background:linear-gradient(135deg,#16a34a,#0e7a37); color:#fff; border-radius:16px; padding:16px; margin:14px 0 4px}
+  .pro-box h4{margin:0 0 4px; font-size:16px} .pro-box p{margin:0 0 12px; font-size:13px; opacity:.92}
+  .pro-box button{background:#fff; color:#0e7a37; border:none; padding:11px 16px; border-radius:11px; font-weight:800; font-size:14px}
+  .pro-on{background:var(--green-bg); border:1px solid var(--green-br); color:var(--green); border-radius:14px; padding:14px; display:flex; align-items:center; justify-content:space-between; margin:14px 0 4px; font-weight:700; font-size:14px}
+  .pro-on button{background:none; border:1px solid var(--green-br); color:var(--green); padding:7px 11px; border-radius:9px; font-size:12px; font-weight:700}
+
+  /* upgrade overlay */
+  .pro{position:fixed; inset:0; background:var(--bg); z-index:45; display:none; flex-direction:column; max-width:520px; margin:0 auto; overflow-y:auto}
+  .pro.show{display:flex; animation:fade .2s ease}
+  .pro-hero{background:linear-gradient(135deg,#16a34a,#0e7a37); color:#fff; padding:22px 20px 26px; position:relative}
+  .pro-hero button.cl{position:absolute; top:16px; right:16px; background:rgba(255,255,255,.2); border:none; color:#fff; width:34px; height:34px; border-radius:50%; font-size:17px}
+  .pro-hero .crown{font-size:34px} .pro-hero h2{margin:8px 0 4px; font-size:24px}
+  .pro-hero p{margin:0; font-size:14px; opacity:.92}
+  .pro-body{padding:20px}
+  .pro-feat{display:flex; gap:12px; align-items:flex-start; margin-bottom:14px}
+  .pro-feat .ic{flex:0 0 38px; height:38px; border-radius:10px; background:var(--green-bg); display:grid; place-items:center; font-size:19px}
+  .pro-feat b{display:block; font-size:15px} .pro-feat span{font-size:13px; color:var(--muted)}
+  .pro-feat.soon{opacity:.6}
+  .plan-opt{display:flex; gap:10px; margin:18px 0}
+  .plan-card{flex:1; border:2px solid var(--line); border-radius:14px; padding:14px; text-align:center; cursor:pointer; background:var(--card); position:relative}
+  .plan-card.sel{border-color:var(--green)}
+  .plan-card .save{position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:99px; white-space:nowrap}
+  .plan-card .price{font-size:22px; font-weight:800} .plan-card .per{font-size:12px; color:var(--muted)}
+  .pro-small{font-size:12px; color:var(--muted); text-align:center; margin-top:12px; line-height:1.5}
+
+  /* nav lock badge */
+  nav button .lock{position:absolute; top:3px; left:0; right:0; text-align:center; font-size:12px; pointer-events:none}
+  nav button.plan-locked .ic{opacity:.38}
+
+  /* compact horizontal strips for favorites / cooked */
+  .me-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch}
+  .me-tile{flex:0 0 132px; background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; cursor:pointer; position:relative}
+  .me-tile .th{height:80px; background-size:cover; background-position:center; display:grid; place-items:center; font-size:30px}
+  .me-tile .nm{font-size:12px; font-weight:600; padding:7px 8px 2px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px}
+  .me-tile .sub{font-size:10px; color:var(--muted); padding:0 8px 8px}
+  .me-tile .x{position:absolute; top:5px; right:5px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.45); color:#fff; border:none; font-size:12px; display:grid; place-items:center; line-height:1}
+  .me-count{font-size:12px; font-weight:600; color:var(--muted)}
 </style>
 </head>
 <body>
@@ -366,12 +411,13 @@
       <div class="me-stat"><b id="statFav">0</b><span>Favorites</span></div>
       <div class="me-stat"><b id="statCooked">0</b><span>Dishes cooked</span></div>
     </div>
+    <div id="proBox"></div>
 
-    <div class="section-label">❤️ Favorites</div>
-    <div id="favList" class="me-list"></div>
+    <div class="section-label">❤️ Favorites <span class="me-count" id="favCount"></span></div>
+    <div id="favList"></div>
 
-    <div class="section-label" style="margin-top:20px">🍽️ Recently cooked</div>
-    <div id="cookedList" class="me-list"></div>
+    <div class="section-label" style="margin-top:20px">🍽️ Recently cooked <span class="me-count" id="cookedCount"></span></div>
+    <div id="cookedList"></div>
 
     <div class="section-label" style="margin-top:20px">💡 Kitchen tips</div>
     <div id="tipList"></div>
@@ -390,7 +436,7 @@
   <button data-go="fridge" class="on"><span class="ic">🧊</span>Fridge</button>
   <button data-go="store"><span class="ic">🛒</span>Store<span class="count" id="navCount"></span></button>
   <button data-go="recipes"><span class="ic">🍳</span>Recipes</button>
-  <button data-go="plan"><span class="ic">📅</span>Plan</button>
+  <button data-go="plan"><span class="ic">📅</span>Plan<span class="lock" id="planLock">🔒</span></button>
   <button data-go="me"><span class="ic">👤</span>Me</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -421,12 +467,33 @@
     <h3>Edit item</h3>
     <label for="edName">Name</label><input type="text" id="edName">
     <label for="edQty">Amount</label><input type="text" id="edQty" placeholder="e.g. 2 / 500g">
-    <label for="edExp">Expiry date (optional)</label><input type="date" id="edExp">
+    <div id="edExpRow"></div>
     <div class="modal-actions">
       <button class="m-cancel" id="edDelete" style="flex:0 0 auto; color:var(--red)">Delete</button>
       <button class="m-cancel" id="edCancel">Cancel</button>
       <button class="m-ok" id="edSave">Save</button>
     </div>
+  </div>
+</div>
+<div class="pro" id="proScreen">
+  <div class="pro-hero">
+    <button class="cl" id="proClose">✕</button>
+    <div class="crown">👑</div>
+    <h2>FridgeChef Pro</h2>
+    <p>Plan your week, waste less food, shop once.</p>
+  </div>
+  <div class="pro-body">
+    <div class="pro-feat"><div class="ic">📅</div><div><b>Weekly meal planner</b><span>Map out Monday–Sunday in seconds.</span></div></div>
+    <div class="pro-feat"><div class="ic">🛒</div><div><b>Auto shopping list</b><span>One tap turns your week into a complete, totalled list.</span></div></div>
+    <div class="pro-feat"><div class="ic">⏳</div><div><b>Pantry &amp; expiry tracking</b><span>Get a heads-up before food goes off.</span></div></div>
+    <div class="pro-feat soon"><div class="ic">🥗</div><div><b>Nutrition info</b><span>Coming soon.</span></div></div>
+    <div class="pro-feat soon"><div class="ic">👨‍👩‍👧</div><div><b>Family sharing</b><span>Coming soon.</span></div></div>
+    <div class="plan-opt">
+      <div class="plan-card" data-plan="monthly"><div class="price">$3.99</div><div class="per">per month</div></div>
+      <div class="plan-card sel" data-plan="yearly"><span class="save">Save 48%</span><div class="price">$24.99</div><div class="per">per year</div></div>
+    </div>
+    <button class="cta" id="proStart" style="margin-top:4px">Start 7-day free trial</button>
+    <p class="pro-small" id="proSmall">Then $24.99/year. Cancel anytime.<br>Demo only — this won't charge you or unlock real billing.</p>
   </div>
 </div>
 
@@ -449,6 +516,7 @@ let cooked    = store.get('cooked', []);       // [{key,title,image,count,ts,...
 let wakeLock=null, cookSteps=[], cookIdx=0, cookRecipe=null;
 let plan = store.get('plan', {});   // {0..6: rawRecipe}
 let editIdx = -1;
+let isPro = store.get('isPro', false);   // demo flag — real billing needs a backend + app-store IAP
 
 /* ---------- sample recipes: steps + emoji + colour ---------- */
 const SAMPLE=[
@@ -651,21 +719,33 @@ const TIPS=[
 ];
 function levelFor(n){ return n>=30?'Master Chef 👑':n>=15?'Head Chef':n>=7?'Sous Chef':n>=3?'Home Cook':n>=1?'Apprentice Cook':'Kitchen Newbie'; }
 function relDate(ts){ const d=Math.floor((Date.now()-ts)/86400000); return d<=0?'today':d===1?'yesterday':d+' days ago'; }
-function meItem(c,list){
+function meTile(c,list){
   const th=c.image?`background-image:url('${c.image}')`:'background:linear-gradient(135deg,#bbf7d0,#16a34a)';
-  const sub=list==='cooked'?`<div class="sub">${relDate(c.ts)}${c.count>1?' · made '+c.count+'×':''}</div>`:(c.time?`<div class="sub">⏱ ${c.time}</div>`:'');
-  return `<div class="me-card" data-key="${c.key}"><div class="th" style="${th}">${c.image?'':'🍽️'}</div>
-    <div style="flex:1"><div class="nm">${c.title}</div>${sub}</div>
-    <button class="x" data-rm="${list}:${c.key}">✕</button></div>`;
+  const sub=list==='cooked'?`<div class="sub">${relDate(c.ts)}${c.count>1?' · '+c.count+'×':''}</div>`:'';
+  return `<div class="me-tile" data-key="${c.key}"><div class="th" style="${th}">${c.image?'':'🍽️'}</div><div class="nm">${c.title}</div>${sub}<button class="x" data-rm="${list}:${c.key}">✕</button></div>`;
+}
+function updateProUI(){
+  const btn=document.querySelector('nav button[data-go="plan"]'); if(btn) btn.classList.toggle('plan-locked', !isPro);
+  const l=document.getElementById('planLock'); if(l) l.style.display=isPro?'none':'inline';
 }
 function renderMe(){
   const totalCooked=cooked.reduce((s,c)=>s+(c.count||1),0);
   document.getElementById('statFav').textContent=favorites.length;
   document.getElementById('statCooked').textContent=totalCooked;
   document.getElementById('meLevel').textContent=levelFor(totalCooked);
-  document.getElementById('favList').innerHTML=favorites.length?favorites.map(c=>meItem(c,'fav')).join(''):'<div class="me-empty">Tap the ♥ on any recipe to save it here.</div>';
-  document.getElementById('cookedList').innerHTML=cooked.length?cooked.map(c=>meItem(c,'cooked')).join(''):'<div class="me-empty">Recipes you mark “I made this” show up here.</div>';
+  document.getElementById('proBox').innerHTML = isPro
+    ? `<div class="pro-on"><span>👑 Pro member <span style="opacity:.7;font-weight:600">(demo)</span></span><button id="proOff">Turn off</button></div>`
+    : `<div class="pro-box"><h4>👑 Go Pro</h4><p>Unlock the weekly meal planner, auto shopping lists and expiry reminders.</p><button id="proUp">See Pro</button></div>`;
+  const favEl=document.getElementById('favList');
+  if(favorites.length){ favEl.className='me-strip'; favEl.innerHTML=favorites.map(c=>meTile(c,'fav')).join(''); }
+  else { favEl.className=''; favEl.innerHTML='<div class="me-empty">Tap the ♥ on any recipe to save it here.</div>'; }
+  document.getElementById('favCount').textContent=favorites.length||'';
+  const ckEl=document.getElementById('cookedList');
+  if(cooked.length){ ckEl.className='me-strip'; ckEl.innerHTML=cooked.map(c=>meTile(c,'cooked')).join(''); }
+  else { ckEl.className=''; ckEl.innerHTML='<div class="me-empty">Recipes you mark “I made this” show up here.</div>'; }
+  document.getElementById('cookedCount').textContent=cooked.length||'';
   document.getElementById('tipList').innerHTML=TIPS.map(t=>`<div class="tip"><b>${t.t}</b><span>${t.d}</span></div>`).join('');
+  updateProUI();
 }
 
 /* ---------- cook mode (screen-awake step view) ---------- */
@@ -686,11 +766,29 @@ function renderCook(){
 }
 function closeCook(){ document.getElementById('cook').classList.remove('show'); relWake(); }
 
+/* ---------- Pro / paywall (demo) ---------- */
+function openPro(){ document.getElementById('proScreen').classList.add('show'); window.scrollTo(0,0); }
+function closePro(){ document.getElementById('proScreen').classList.remove('show'); }
+function setPro(v){ isPro=v; store.set('isPro',isPro); renderMe(); }
+function lockedPanel(title, lines){
+  return `<div class="locked"><span class="big">👑</span><h3>${title} <span class="pro-badge">PRO</span></h3>
+    <ul>${lines.map(l=>`<li>${l}</li>`).join('')}</ul>
+    <button class="cta" id="unlockBtn" style="max-width:260px;margin:6px auto 0">Unlock Pro</button></div>`;
+}
+
 /* ---------- meal planner ---------- */
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAYL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 function thumbBg(r){ return r.image?`background-image:url('${r.image}')`:'background:linear-gradient(135deg,#bbf7d0,#16a34a)'; }
 function renderPlan(){
+  const shopBtn=document.getElementById('planShop');
+  if(!isPro){
+    document.getElementById('planList').innerHTML=lockedPanel('Weekly meal planner',
+      ['Plan every day of the week','Auto-build one shopping list for it all','Totals amounts &amp; skips what you have']);
+    if(shopBtn) shopBtn.style.display='none';
+    return;
+  }
+  if(shopBtn) shopBtn.style.display='';
   const filled=DAYL.some((d,i)=>plan[i]);
   const head=filled?`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button data-clearweek="1" style="background:none;border:1.5px solid var(--line);color:var(--muted);padding:7px 12px;border-radius:10px;font-size:12px;font-weight:700">↺ Clear week</button></div>`:'';
   document.getElementById('planList').innerHTML=head+DAYL.map((d,i)=>{
@@ -784,7 +882,10 @@ function editFridge(i){
   const f=fridge[i]; if(!f) return; editIdx=i;
   document.getElementById('edName').value=f.name;
   document.getElementById('edQty').value=f.qty||'';
-  document.getElementById('edExp').value=f.exp||'';
+  document.getElementById('edExpRow').innerHTML = isPro
+    ? `<label for="edExp">Expiry date (optional)</label><input type="date" id="edExp" value="${f.exp||''}">`
+    : `<label>Expiry date <span class="pro-badge">PRO</span></label><button type="button" id="edExpLock" style="width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);color:var(--muted);padding:13px 14px;border-radius:12px;font-size:14px;font-weight:600">🔒 Expiry &amp; spoilage alerts — tap to unlock Pro</button>`;
+  const lk=document.getElementById('edExpLock'); if(lk) lk.onclick=()=>{ document.getElementById('editModal').classList.remove('show'); openPro(); };
   document.getElementById('editModal').classList.add('show');
 }
 
@@ -1144,7 +1245,7 @@ function closeEdit(){ document.getElementById('editModal').classList.remove('sho
 document.getElementById('edSave').onclick=()=>{
   if(editIdx<0) return; const f=fridge[editIdx]; if(!f){ closeEdit(); return; }
   const nm=document.getElementById('edName').value.trim();
-  if(!nm){ fridge.splice(editIdx,1); } else { f.name=nm; f.qty=document.getElementById('edQty').value.trim(); f.exp=document.getElementById('edExp').value||''; }
+  if(!nm){ fridge.splice(editIdx,1); } else { f.name=nm; f.qty=document.getElementById('edQty').value.trim(); const ex=document.getElementById('edExp'); f.exp = ex ? (ex.value||'') : (f.exp||''); }
   closeEdit(); renderFridge();
 };
 document.getElementById('edDelete').onclick=()=>{ if(editIdx>=0){ fridge.splice(editIdx,1); } closeEdit(); renderFridge(); };
@@ -1152,12 +1253,28 @@ document.getElementById('edCancel').onclick=closeEdit;
 document.getElementById('editModal').onclick=e=>{ if(e.target.id==='editModal') closeEdit(); };
 // meal plan interactions
 document.getElementById('planList').addEventListener('click',e=>{
+  if(e.target.id==='unlockBtn'){ openPro(); return; }
   const add=e.target.closest('[data-add]'); if(add){ const i=+add.dataset.add; pickRecipe(r=>{ planAssign(i,r); toast('Added to '+DAYL[i]); }); return; }
   if(e.target.closest('[data-clearweek]')){ showConfirm('↺ Clear the week?','This removes all planned meals (your recipes and fridge are untouched).','','Clear week',()=>{ plan={}; store.set('plan',plan); renderPlan(); }); return; }
   const clr=e.target.closest('[data-clear]'); if(clr){ delete plan[+clr.dataset.clear]; store.set('plan',plan); renderPlan(); return; }
   const open=e.target.closest('[data-open]'); if(open){ const r=plan[+open.dataset.open]; if(r) openDetail(scoreRecipe(r)); }
 });
 document.getElementById('planShop').onclick=planShop;
+// pro / paywall wiring
+document.getElementById('proBox').addEventListener('click',e=>{
+  if(e.target.id==='proUp') openPro();
+  if(e.target.id==='proOff') setPro(false);
+});
+document.getElementById('proClose').onclick=closePro;
+let chosenPlan='yearly';
+document.querySelectorAll('#proScreen .plan-card').forEach(c=>c.onclick=()=>{
+  chosenPlan=c.dataset.plan;
+  document.querySelectorAll('#proScreen .plan-card').forEach(x=>x.classList.toggle('sel',x===c));
+  document.getElementById('proSmall').innerHTML = chosenPlan==='yearly'
+    ? 'Then $24.99/year. Cancel anytime.<br>Demo only — this won’t charge you or unlock real billing.'
+    : 'Then $3.99/month. Cancel anytime.<br>Demo only — this won’t charge you or unlock real billing.';
+});
+document.getElementById('proStart').onclick=()=>{ setPro(true); closePro(); renderPlan(); renderFridge(); toast('Pro unlocked (demo) 👑'); };
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && document.getElementById('cook').classList.contains('show')) reqWake(); });
 document.getElementById('recipeSearch').addEventListener('input',e=>{
   searchQuery=e.target.value; page=0;
@@ -1197,7 +1314,7 @@ document.getElementById('saveKey').onclick=()=>{
   setTimeout(()=>m.textContent='',2500);
 };
 
-renderFridge(); updateBadge();
+renderFridge(); updateBadge(); updateProUI();
 </script>
 </body>
 </html>
