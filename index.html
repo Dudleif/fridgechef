@@ -691,7 +691,9 @@ const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAYL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 function thumbBg(r){ return r.image?`background-image:url('${r.image}')`:'background:linear-gradient(135deg,#bbf7d0,#16a34a)'; }
 function renderPlan(){
-  document.getElementById('planList').innerHTML=DAYL.map((d,i)=>{
+  const filled=DAYL.some((d,i)=>plan[i]);
+  const head=filled?`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button data-clearweek="1" style="background:none;border:1.5px solid var(--line);color:var(--muted);padding:7px 12px;border-radius:10px;font-size:12px;font-weight:700">↺ Clear week</button></div>`:'';
+  document.getElementById('planList').innerHTML=head+DAYL.map((d,i)=>{
     const r=plan[i];
     return `<div class="day-row"><div class="day-name">${DAYS[i]}</div>`+
       (r?`<div class="day-meal" data-open="${i}"><div class="th" style="${thumbBg(r)}">${r.image?'':'🍽️'}</div><div class="nm">${r.title}</div><button class="x" data-clear="${i}">✕</button></div>`
@@ -716,9 +718,29 @@ function addToPlan(r){
   document.querySelectorAll('.day-pick').forEach(b=>b.onclick=()=>{ planAssign(+b.dataset.d, r); close(); toast('Added to '+DAYL[+b.dataset.d]); });
 }
 function planShop(){
-  const seen=new Set(); let n=0;
-  Object.keys(plan).forEach(k=>{ const r=plan[k]; if(!r) return; const sc=scoreRecipe(r);
-    sc.ings.forEach(x=>{ if(x.have||x.pantry) return; const key=norm(x.name); if(seen.has(key)) return; seen.add(key); addShop(x.name,x.measure); n++; }); });
+  // 1) total up what every planned meal needs, summing amounts across days when units match
+  const need={};
+  Object.keys(plan).forEach(k=>{ const r=plan[k]; if(!r) return;
+    scoreRecipe(r).ings.forEach(x=>{ if(x.pantry) return;
+      const key=norm(x.name); const e=need[key]||(need[key]={name:x.name, num:0, unit:null, mixed:false, hadMeasure:false});
+      const rq=parseAmt(x.measure);
+      if(rq){ e.hadMeasure=true; if(e.unit===null||e.unit===rq.unit){ e.unit=rq.unit; e.num+=rq.num; } else e.mixed=true; }
+      else e.mixed=true;
+    });
+  });
+  // 2) subtract what's already in the fridge, then add the remainder to the shopping list
+  let n=0;
+  Object.values(need).forEach(e=>{
+    const haveAny=haveIngredient(e.name), fq=parseAmt(fridgeQty(e.name));
+    if(e.hadMeasure && !e.mixed && e.unit){
+      let remaining=e.num;
+      if(fq && fq.unit===e.unit) remaining-=fq.num;     // you already have some
+      if(remaining>0.001){ addShop(e.name, fmtAmt(remaining,e.unit)); n++; }
+    } else if(!haveAny){
+      addShop(e.name, '');                               // can't total amounts; just add the item
+      n++;
+    }
+  });
   if(n){ toast(`Added ${n} item${n!==1?'s':''} to shopping list`); go('store'); }
   else toast('Nothing missing — you can make it all!');
 }
@@ -1131,6 +1153,7 @@ document.getElementById('editModal').onclick=e=>{ if(e.target.id==='editModal') 
 // meal plan interactions
 document.getElementById('planList').addEventListener('click',e=>{
   const add=e.target.closest('[data-add]'); if(add){ const i=+add.dataset.add; pickRecipe(r=>{ planAssign(i,r); toast('Added to '+DAYL[i]); }); return; }
+  if(e.target.closest('[data-clearweek]')){ showConfirm('↺ Clear the week?','This removes all planned meals (your recipes and fridge are untouched).','','Clear week',()=>{ plan={}; store.set('plan',plan); renderPlan(); }); return; }
   const clr=e.target.closest('[data-clear]'); if(clr){ delete plan[+clr.dataset.clear]; store.set('plan',plan); renderPlan(); return; }
   const open=e.target.closest('[data-open]'); if(open){ const r=plan[+open.dataset.open]; if(r) openDetail(scoreRecipe(r)); }
 });
